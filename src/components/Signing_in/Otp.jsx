@@ -65,10 +65,7 @@ function Otp() {
             ))}
           </div>
 
-          <button
-            type="submit"
-            className="bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
-          >
+          <button type="submit" className="bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition">
             Verify OTP
           </button>
         </form>

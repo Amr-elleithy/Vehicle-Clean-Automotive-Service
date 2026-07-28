@@ -146,21 +146,11 @@ const [openSections, setOpenSections] = useState({
         </div>
       )}
 
-      <div
-        ref={sidebarRef}
-        className="bg-white p-5 gap-4 flex flex-col
-          fixed md:static top-0 bottom-0 end-0 z-40
-          w-full md:w-64 md:border-s
-          translate-x-full md:translate-x-0
-          overflow-y-auto touch-pan-y"
-      >
+      <div ref={sidebarRef} className="bg-white p-5 gap-4 flex flex-col fixed md:static top-0 bottom-0 end-0 z-40 w-full md:w-64 md:border-s
+          translate-x-full md:translate-x-0 overflow-y-auto touch-pan-y">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">My App</h2>
-          <button
-            onClick={onClose}
-            className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100"
-            aria-label="إغلاق القائمة"
-          >
+          <button onClick={onClose} className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="إغلاق القائمة">
             <X size={24} />
           </button>
         </div>
@@ -202,10 +192,7 @@ const [openSections, setOpenSections] = useState({
 
         {/* Section 3 */}
         <div className="flex flex-col gap-4">
-          <button
-            onClick={() => toggleSection("settings")}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-200 transition font-medium text-base"
-          >
+          <button onClick={() => toggleSection("settings")} className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-200 transition font-medium text-base">
             <span>الاعدادات و الفوترة</span>
             <ChevronDown size={18} className={`transition-transform ${openSections.settings ? "rotate-180" : ""}`} />
           </button>
@@ -221,5 +208,4 @@ const [openSections, setOpenSections] = useState({
     </>
   );
 }
-
 export default Sidebar;
