@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Search, Pencil, Trash2 } from "lucide-react";
-import { vehicleBrandModel } from "../../../api_contents/api";
+import { vehicleBrand } from "../../../api_contents/api";
 
 export default function Brands_management() {
   const PAGE_SIZE = 10;
@@ -41,7 +41,7 @@ export default function Brands_management() {
       try {
         setLoading(true);
 
-        const data = await vehicleBrandModel({
+        const data = await vehicleBrand({
           page: currentPage,
           limit: PAGE_SIZE,
           search,
@@ -90,6 +90,7 @@ export default function Brands_management() {
           }}
           className="w-[30%] rounded-lg border border-gray-300 bg-white px-4 py-2 text-right shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
         >
+          <option value="automatic">تلقائي</option>
           <option value="automatic">تلقائي</option>
           <option value="ascending">تصاعدي</option>
         </select>

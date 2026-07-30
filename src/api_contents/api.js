@@ -69,13 +69,7 @@ export const order = async ({ page, limit, search, sortType, status }) => {
   return response.data;
 };
 
-export const getManagers = async ({
-  page,
-  limit,
-  search,
-  sortType,
-  status,
-}) => {
+export const getManagers = async ({page, limit, search, sortType, status}) => {
   const response = await api.get("/v1/users", {
     params: {
       page,
@@ -83,11 +77,9 @@ export const getManagers = async ({
       role: "ADMIN",
       search: search || undefined,
       sort: sortType !== "automatic" ? sortType : undefined,
-
       status: status !== "all" ? status : undefined,
     },
   });
-
   return response.data;
 };
 

@@ -36,6 +36,7 @@ export default function Baqu() {
   }, [currentPage, sortType, status]);
   return (
     <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
+      <h1 className="text-2xl font-bold mb-6">عرض الباقات</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-right">
           <thead className="bg-gray-100">

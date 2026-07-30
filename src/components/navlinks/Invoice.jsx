@@ -4,96 +4,101 @@ import { getUserBills } from "../../api_contents/api";
 import { downloadInvoice } from "../../api_contents/api";
 
 export default function Invoice() {
-  const PAGE_SIZE = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [sortType, setSortType] = useState("automatic");
-  const [status, setStatus] = useState("all");
-  const [bills, setBills] = useState([]);
-  const [loading, setLoading] = useState(false);
+ const PAGE_SIZE = 10;
+const PAGE_WINDOW = 5;
 
-  const handleInvoiceClick = async (bill) => {
-    try {
-      const res = await downloadInvoice(bill.id);
+const [currentPage, setCurrentPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
 
-      console.log(res);
+const [search, setSearch] = useState("");
+const [searchInput, setSearchInput] = useState("");
+const [sortType, setSortType] = useState("automatic");
+const [status, setStatus] = useState("all");
 
-      if (res.statusCode === 200 && typeof res.data === "string") {
-        window.open(res.data, "_blank");
-      }
-    } catch (err) {
-      console.error(err);
+const [bills, setBills] = useState([]);
+const [loading, setLoading] = useState(false);
+
+// Pagination calculations
+const startPage = Math.max(
+  1,
+  currentPage - Math.floor(PAGE_WINDOW / 2)
+);
+
+const endPage = Math.min(
+  totalPages,
+  startPage + PAGE_WINDOW - 1
+);
+
+const adjustedStartPage = Math.max(
+  1,
+  endPage - PAGE_WINDOW + 1
+);
+
+const pages = Array.from(
+  { length: endPage - adjustedStartPage + 1 },
+  (_, i) => adjustedStartPage + i
+);
+
+const handleInvoiceClick = async (bill) => {
+  try {
+    const res = await downloadInvoice(bill.id);
+
+    if (res.statusCode === 200 && typeof res.data === "string") {
+      window.open(res.data, "_blank");
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setCurrentPage(1);
-      setSearch(searchInput);
-    }, 400);
-    return () => clearTimeout(t);
-  }, [searchInput]);
+useEffect(() => {
+  const t = setTimeout(() => {
+    setCurrentPage(1);
+    setSearch(searchInput);
+  }, 400);
 
-  const fetchBills = async () => {
-    try {
-      setLoading(true);
+  return () => clearTimeout(t);
+}, [searchInput]);
 
-      const res = await getUserBills({
-        page: currentPage,
-        limit: PAGE_SIZE,
-        search,
-        sortType,
-        status,
-      });
-      console.log(res);
-      console.log(res.data);
-      console.log(typeof res.data);
+const fetchBills = async () => {
+  try {
+    setLoading(true);
 
-      setBills(res.data?.invoices ?? res.data ?? []);
+    const res = await getUserBills({
+      page: currentPage,
+      limit: PAGE_SIZE,
+      search,
+      sortType,
+      status,
+    });
 
-      if (res.meta?.total) {
-        setTotalPages(Math.max(1, Math.ceil(res.meta.total / PAGE_SIZE)));
-      } else {
-        setTotalPages(1);
-      }
-    } catch (err) {
-      console.error("ERROR:", err);
-      setBills([]);
-    } finally {
-      setLoading(false);
+    setBills(res.data?.invoices ?? res.data ?? []);
+
+    if (res.meta?.total) {
+      setTotalPages(Math.ceil(res.meta.total / PAGE_SIZE));
+    } else {
+      setTotalPages(1);
     }
-  };
+  } catch (err) {
+    console.error("ERROR:", err);
+    setBills([]);
+    setTotalPages(1);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleOpenReceipt = (bill) => {
-    console.log("Invoice clicked:", bill);
+const handleOpenReceipt = (bill) => {
+  console.log("Invoice clicked:", bill);
+};
 
-    // window.open(bill.receipt_url, "_blank");
-  };
-
-  useEffect(() => {
-    fetchBills();
-  }, [currentPage, search, sortType, status]);
+useEffect(() => {
+  fetchBills();
+}, [currentPage, search, sortType, status]);
 
   return (
     <div>
-      <div className="flex items-center gap-3">
-        <div className="relative w-[70%]">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="ابحث..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
-      </div>
-
+      <h1 className="text-2xl font-bold mb-6">ادارة الفواتير</h1>
       <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-right">
@@ -160,25 +165,67 @@ export default function Invoice() {
           </table>
         </div>
 
-        <div className="flex justify-center items-center gap-4 p-4 border-t">
+        <div className="flex justify-center items-center gap-2 p-4 border-t flex-wrap">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             السابق
           </button>
 
-          <span>
-            صفحة {currentPage} من {totalPages}
-          </span>
+          {startPage > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                1
+              </button>
+
+              {startPage > 2 && <span>...</span>}
+            </>
+          )}
+
+          {pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-9 h-9 rounded ${
+                currentPage === page
+                  ? "bg-blue-600 text-white"
+                  : "border hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && <span>...</span>}
+
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             التالي
           </button>

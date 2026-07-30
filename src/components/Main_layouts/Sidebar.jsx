@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X, CalendarCheck2, Users, Package, Gift, Receipt, FileText, CarFront, Sparkles} from "lucide-react";
 
 function Sidebar({ isOpen, onClose, onOpen }) {
 const [openSections, setOpenSections] = useState({
@@ -11,9 +11,8 @@ const [openSections, setOpenSections] = useState({
 
   const sidebarRef = useRef(null);
   const edgeRef = useRef(null);
-
   const linkClass = ({ isActive }) =>
-    `block px-4 py-3 rounded-lg transition text-base ${
+    `flex items-center gap-3 px-4 py-3 rounded-lg ${
       isActive ? "bg-green-600 text-white" : "text-gray-700 hover:bg-gray-200"
     }`;
 
@@ -149,7 +148,7 @@ const [openSections, setOpenSections] = useState({
       <div ref={sidebarRef} className="bg-white p-5 gap-4 flex flex-col fixed md:static top-0 bottom-0 end-0 z-40 w-full md:w-64 md:border-s
           translate-x-full md:translate-x-0 overflow-y-auto touch-pan-y">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">My App</h2>
+          <h2 className="text-xl font-bold">قائمة الاختيارات</h2>
           <button onClick={onClose} className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="إغلاق القائمة">
             <X size={24} />
           </button>
@@ -166,9 +165,20 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.booking && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/booking" className={linkClass} onClick={handleLinkClick}>ادارة الاشتراكات و الحجوزات</NavLink>
-              <NavLink to="/home/users" className={linkClass} onClick={handleLinkClick}>اداة حسابات المستخدمين</NavLink>
-              <NavLink to="/home/cars" className={linkClass} onClick={handleLinkClick}>ادارة معلومات السيارات</NavLink>
+              <NavLink to="/home/booking" className={linkClass} onClick={handleLinkClick}>
+                <CalendarCheck2  className="w-5 h-5 shrink-0"  />
+                <span>ادارة الاشتراكات و الحجوزات</span>
+              </NavLink>
+
+              <NavLink to="/home/users" className={linkClass}>
+                <Users className="w-5 h-5 shrink-0" />
+                <span>اداة حسابات المستخدمين</span>
+              </NavLink>
+
+              <NavLink to="/home/cars" className={linkClass}>
+                <CarFront className="w-5 h-5 shrink-0" />
+                <span>ادارة معلومات السيارات</span>
+              </NavLink>
             </nav>
           )}
         </div>
@@ -183,9 +193,18 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.reports && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/baqu" className={linkClass} onClick={handleLinkClick}>الباقات </NavLink>
-              <NavLink to="/home/gift" className={linkClass} onClick={handleLinkClick}>الهدايا </NavLink>
-              <NavLink to="/home/points" className={linkClass} onClick={handleLinkClick}>ادارة النقاط</NavLink>
+              <NavLink to="/home/baqu" className={linkClass} onClick={handleLinkClick}>
+              <Sparkles className="w-5 h-5 shrink-0" />
+              <span>الباقات</span>
+               </NavLink>
+              <NavLink to="/home/gift" className={linkClass} onClick={handleLinkClick}>
+              <Gift></Gift>
+              <span>الهدايا</span>
+               </NavLink>
+              <NavLink to="/home/points" className={linkClass} onClick={handleLinkClick}> 
+              <Package />
+              <span>ادارة النقاط</span>
+              </NavLink>
             </nav>
           )}
         </div>
@@ -199,8 +218,14 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.settings && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/invoice" className={linkClass} onClick={handleLinkClick}>ادارة الفواتير</NavLink>
-              <NavLink to="/home/manage_message" className={linkClass} onClick={handleLinkClick}>ادارة الرسائل النصية</NavLink>
+              <NavLink to="/home/invoice" className={linkClass} onClick={handleLinkClick}> 
+              <Receipt />
+              <span>ادارة الفواتير</span>
+              </NavLink>
+              <NavLink to="/home/manage_message" className={linkClass} onClick={handleLinkClick}> 
+              <FileText />
+              <span>ادارة الرسائل النصية</span>
+              </NavLink>
             </nav>
           )}
         </div>

@@ -76,7 +76,7 @@ export default function Point() {
   return (
     <div className="p-6">
       <div className="flex flex-row justify-between items-center w-full">
-        <h1 className="text-2xl font-bold mb-6">ادارة حسابات المستخدمين</h1>
+        <h1 className="text-2xl font-bold mb-6">ادارة النقاط </h1>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded"
           onClick={() => setShowForm(true)}

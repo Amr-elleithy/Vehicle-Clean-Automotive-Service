@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { sms } from "../../api_contents/api";
 
-// Sender IDs are fixed/configured with the SMS provider, not returned by any list endpoint
 const SENDER_IDS = [
   { id: "QuickySA-AD", name: "QuickySA-AD" },
-  { id: "REPLACE_ME", name: "REPLACE_ME" }, // TODO: replace with the actual second sender ID
+  { id: "REPLACE_ME", name: "REPLACE_ME" },
 ];
 
 export default function Sms_list() {
   const PAGE_SIZE = 10;
+  const PAGE_WINDOW = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
@@ -24,6 +24,16 @@ export default function Sms_list() {
     message: "",
     sender_id: "",
   });
+
+  // Pagination calculations
+  const startPage = Math.max(1, currentPage - Math.floor(PAGE_WINDOW / 2));
+  const endPage = Math.min(totalPages, startPage + PAGE_WINDOW - 1);
+  const adjustedStartPage = Math.max(1, endPage - PAGE_WINDOW + 1);
+  const pages = Array.from(
+    { length: endPage - adjustedStartPage + 1 },
+    (_, i) => adjustedStartPage + i,
+  );
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -32,6 +42,7 @@ export default function Sms_list() {
       [name]: value,
     }));
   };
+
   const resetForm = () => {
     setFormData({
       receiver_type: "",
@@ -39,10 +50,12 @@ export default function Sms_list() {
       sender_id: "",
     });
   };
+
   const closeForm = () => {
     resetForm();
     setShowForm(false);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -79,6 +92,7 @@ export default function Sms_list() {
       setCurrentPage(1);
       setSearch(searchInput);
     }, 400);
+
     return () => clearTimeout(t);
   }, [searchInput]);
 
@@ -91,13 +105,14 @@ export default function Sms_list() {
       setMessages(res.data?.sms ?? res.data ?? []);
 
       if (res.meta?.total) {
-        setTotalPages(Math.max(1, Math.ceil(res.meta.total / PAGE_SIZE)));
+        setTotalPages(Math.ceil(res.meta.total / PAGE_SIZE));
       } else {
         setTotalPages(1);
       }
     } catch (err) {
       console.error("ERROR:", err);
       setMessages([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -110,7 +125,7 @@ export default function Sms_list() {
   return (
     <div className="p-6">
       <div className="flex flex-row justify-between items-center w-full">
-        <h1 className="text-2xl font-bold mb-6">ادارة حسابات المستخدمين</h1>
+        <h1 className="text-2xl font-bold mb-6">ادارة الرسائل النصية</h1>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded"
           onClick={() => setShowForm(true)}
@@ -119,21 +134,6 @@ export default function Sms_list() {
         </button>
       </div>
       <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-
-          <input
-            type="text"
-            placeholder="ابحث..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
-
         <select
           value={sortType}
           onChange={(e) => {
@@ -301,25 +301,67 @@ export default function Sms_list() {
           </table>
         </div>
 
-        <div className="flex justify-center items-center gap-4 p-4 border-t">
+        <div className="flex justify-center items-center gap-2 p-4 border-t flex-wrap">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             السابق
           </button>
 
-          <span>
-            صفحة {currentPage} من {totalPages}
-          </span>
+          {startPage > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                1
+              </button>
+
+              {startPage > 2 && <span>...</span>}
+            </>
+          )}
+
+          {pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-9 h-9 rounded ${
+                currentPage === page
+                  ? "bg-blue-600 text-white"
+                  : "border hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && <span>...</span>}
+
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             التالي
           </button>

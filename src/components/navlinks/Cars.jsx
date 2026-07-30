@@ -99,7 +99,7 @@ export default function Cars() {
   return (
     <div className="p-6">
       <div className="flex flex-row justify-between items-center w-full">
-        <h1 className="text-2xl font-bold mb-6">ادارة حسابات المستخدمين</h1>
+        <h1 className="text-2xl font-bold mb-6">ادارة معلومات السيارات</h1>
         <div className="flex flex-row gap-3">
           <button
             onClick={() => setShowBrandForm(true)}
@@ -293,7 +293,7 @@ export default function Cars() {
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
-            ادارة البراندات
+            ادارة السيارات
           </button>
 
           <button
@@ -315,7 +315,7 @@ export default function Cars() {
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
-            ادارة السيارات
+            ادارة البراندات
           </button>
         </div>
 

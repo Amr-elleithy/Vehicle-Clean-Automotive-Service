@@ -4,47 +4,80 @@ import { points } from "../../../api_contents/api";
 
 export default function Users_points() {
   const PAGE_SIZE = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [sortType, setSortType] = useState("automatic");
-  const [status, setStatus] = useState("all");
-  const [usersPoints, setUsersPoints] = useState([]);
-  const [loading, setLoading] = useState(false);
+const PAGE_WINDOW = 5;
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setCurrentPage(1);
-      setSearch(searchInput);
-    }, 400);
-    return () => clearTimeout(t);
-  }, [searchInput]);
+const [currentPage, setCurrentPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
 
-  const fetchPoints = async () => {
-    try {
-      setLoading(true);
+const [search, setSearch] = useState("");
+const [searchInput, setSearchInput] = useState("");
+const [sortType, setSortType] = useState("automatic");
+const [status, setStatus] = useState("all");
 
-      const res = await points(currentPage, PAGE_SIZE, search, sortType, status);
+const [usersPoints, setUsersPoints] = useState([]);
+const [loading, setLoading] = useState(false);
 
-      setUsersPoints(res.data?.points ?? res.data ?? []);
+// Pagination calculations
+const startPage = Math.max(
+  1,
+  currentPage - Math.floor(PAGE_WINDOW / 2)
+);
 
-      if (res.meta?.total) {
-        setTotalPages(Math.max(1, Math.ceil(res.meta.total / PAGE_SIZE)));
-      } else {
-        setTotalPages(1);
-      }
-    } catch (err) {
-      console.error("ERROR:", err);
-      setUsersPoints([]);
-    } finally {
-      setLoading(false);
+const endPage = Math.min(
+  totalPages,
+  startPage + PAGE_WINDOW - 1
+);
+
+const adjustedStartPage = Math.max(
+  1,
+  endPage - PAGE_WINDOW + 1
+);
+
+const pages = Array.from(
+  { length: endPage - adjustedStartPage + 1 },
+  (_, i) => adjustedStartPage + i
+);
+
+useEffect(() => {
+  const t = setTimeout(() => {
+    setCurrentPage(1);
+    setSearch(searchInput);
+  }, 400);
+
+  return () => clearTimeout(t);
+}, [searchInput]);
+
+const fetchPoints = async () => {
+  try {
+    setLoading(true);
+
+    const res = await points(
+      currentPage,
+      PAGE_SIZE,
+      search,
+      sortType,
+      status
+    );
+
+    setUsersPoints(res.data?.points ?? res.data ?? []);
+
+    if (res.meta?.total) {
+      setTotalPages(Math.ceil(res.meta.total / PAGE_SIZE));
+    } else {
+      setTotalPages(1);
     }
-  };
+  } catch (err) {
+    console.error("ERROR:", err);
+    setUsersPoints([]);
+    setTotalPages(1);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  useEffect(() => {
-    fetchPoints();
-  }, [currentPage, search, sortType, status]);
+useEffect(() => {
+  fetchPoints();
+}, [currentPage, search, sortType, status]);
 
   return (
     <div>
@@ -127,25 +160,67 @@ export default function Users_points() {
           </table>
         </div>
 
-        <div className="flex justify-center items-center gap-4 p-4 border-t">
+        <div className="flex justify-center items-center gap-2 p-4 border-t flex-wrap">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             السابق
           </button>
 
-          <span>
-            صفحة {currentPage} من {totalPages}
-          </span>
+          {startPage > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                1
+              </button>
+
+              {startPage > 2 && <span>...</span>}
+            </>
+          )}
+
+          {pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-9 h-9 rounded ${
+                currentPage === page
+                  ? "bg-blue-600 text-white"
+                  : "border hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && <span>...</span>}
+
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className="w-9 h-9 rounded border hover:bg-gray-100"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className={`px-3 py-1 rounded border ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white hover:bg-gray-100"
+            }`}
           >
             التالي
           </button>

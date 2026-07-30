@@ -96,20 +96,6 @@ export default function Gifts_send_list() {
   return (
     <div>
       <div className="flex items-center gap-3">
-        <div className="relative w-[70%]">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="ابحث..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
-
         <select
           value={selectedPackage}
           onChange={(e) => {
@@ -127,20 +113,6 @@ export default function Gifts_send_list() {
               {pkg.name}
             </option>
           ))}
-        </select>
-
-        {/* Date sort*/}
-        <select
-          value={sortType}
-          onChange={(e) => {
-            setCurrentPage(1);
-            setSortType(e.target.value);
-          }}
-          className="w-[30%] rounded-lg border border-gray-300 bg-white px-4 py-2 text-right shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
-        >
-          <option value="automatic">تلقائي</option>
-          <option value="asc">تصاعدي</option>
-          <option value="desc">تنازلي</option>
         </select>
       </div>
 
