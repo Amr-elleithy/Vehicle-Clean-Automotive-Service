@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback} from "react";
 import { Search } from "lucide-react";
 import { Subscription } from "../../../api_contents/api";
 
-// Display the date
 function formatDate(value) {
   if (!value) return "—";
   const d = new Date(value);

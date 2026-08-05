@@ -10,7 +10,7 @@ export default function Gifts_send_list() {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [sortType, setSortType] = useState("automatic"); // "automatic" | "asc" | "desc"
+  const [sortType, setSortType] = useState("automatic");
   const [status, setStatus] = useState("all");
   const [gifts, setGifts] = useState([]);
   const [loading, setLoading] = useState(false);

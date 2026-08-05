@@ -11,7 +11,7 @@ export default function Point() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     phone: "",
-    accountType: "user", // "user" || "biker"
+    accountType: "user",
     points: "",
   });
   const [errors, setErrors] = useState({});
@@ -20,7 +20,6 @@ export default function Point() {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      // allow only digits, cap at 10 characters
       const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
       setFormData((prev) => ({ ...prev, phone: digitsOnly }));
       return;
@@ -52,16 +51,13 @@ export default function Point() {
       setLoading(true);
 
       const payload = {
-        phone: `+966${formData.phone.slice(1)}`, // convert 05XXXXXXXX -> +9665XXXXXXXX
+        phone: `+966${formData.phone.slice(1)}`,
         accountType: formData.accountType,
         points: Number(formData.points),
       };
 
-      // Replace with your actual API call, e.g.:
-      // const res = await add_points(payload);
       console.log("Submitting points payload:", payload);
 
-      // Reset form + close modal on success
       setFormData({ phone: "", accountType: "user", points: "" });
       setErrors({});
       setShowForm(false);

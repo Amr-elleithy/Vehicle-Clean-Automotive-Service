@@ -5,7 +5,7 @@ import { bikers_points } from "../../../api_contents/api";
 export default function Bikers_points() {
   const PAGE_SIZE = 10;
   const [bikers, setBikers] = useState([]);
-  const [rawResponse, setRawResponse] = useState(null); // 👈 debug holder
+  const [rawResponse, setRawResponse] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +26,6 @@ export default function Bikers_points() {
         );
         console.log("API response:", data);
 
-        // shape is: { message, data: { bikers: [...], bikersCount }, statusCode }
         setBikers(data?.data?.bikers ?? []);
       } catch (err) {
         console.error(err);

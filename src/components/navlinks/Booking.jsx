@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Subscriptions from "./Booking_tabs/Subscriptions";
 import Reservations from "./Booking_tabs/Reservations";
-import {CalendarDays} from "lucide-react";
 
 function Booking() {
   const [activeTab, setActiveTab] = useState("reservations");

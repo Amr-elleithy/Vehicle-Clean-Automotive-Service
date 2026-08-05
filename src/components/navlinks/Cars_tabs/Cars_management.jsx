@@ -12,14 +12,10 @@ export default function Cars_management() {
   const PAGE_SIZE = 10;
   const PAGE_WINDOW = 5;
   const [totalBrands, setTotalBrands] = useState(0);
-
   const totalPages = Math.ceil(totalBrands / PAGE_SIZE);
   const startPage = Math.max(1, currentPage - Math.floor(PAGE_WINDOW / 2));
-
   const endPage = Math.min(totalPages, startPage + PAGE_WINDOW - 1);
-
   const adjustedStartPage = Math.max(1, endPage - PAGE_WINDOW + 1);
-
   const pages = Array.from(
     { length: endPage - adjustedStartPage + 1 },
     (_, i) => adjustedStartPage + i,
