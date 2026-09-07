@@ -165,19 +165,24 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.booking && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/booking" className={linkClass} onClick={handleLinkClick}>
+              <NavLink to="/admin/booking" className={linkClass} onClick={handleLinkClick}>
                 <CalendarCheck2  className="w-5 h-5 shrink-0"  />
                 <span>ادارة الاشتراكات و الحجوزات</span>
               </NavLink>
 
-              <NavLink to="/home/users" className={linkClass}>
+              <NavLink to="/admin/users" className={linkClass}>
                 <Users className="w-5 h-5 shrink-0" />
                 <span>اداة حسابات المستخدمين</span>
               </NavLink>
 
-              <NavLink to="/home/cars" className={linkClass}>
+              <NavLink to="/admin/cars" className={linkClass}>
                 <CarFront className="w-5 h-5 shrink-0" />
                 <span>ادارة معلومات السيارات</span>
+              </NavLink>
+
+              <NavLink to="/admin/services" className={linkClass}>
+                <Sparkles className="w-5 h-5 shrink-0" />
+                <span> الخدمات الاضافية </span>
               </NavLink>
             </nav>
           )}
@@ -193,15 +198,15 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.reports && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/baqu" className={linkClass} onClick={handleLinkClick}>
+              <NavLink to="/admin/baqu" className={linkClass} onClick={handleLinkClick}>
               <Sparkles className="w-5 h-5 shrink-0" />
               <span>الباقات</span>
                </NavLink>
-              <NavLink to="/home/gift" className={linkClass} onClick={handleLinkClick}>
+              <NavLink to="/admin/gift" className={linkClass} onClick={handleLinkClick}>
               <Gift></Gift>
               <span>الهدايا</span>
                </NavLink>
-              <NavLink to="/home/points" className={linkClass} onClick={handleLinkClick}> 
+              <NavLink to="/admin/points" className={linkClass} onClick={handleLinkClick}> 
               <Package />
               <span>ادارة النقاط</span>
               </NavLink>
@@ -218,11 +223,11 @@ const [openSections, setOpenSections] = useState({
 
           {openSections.settings && (
             <nav className="flex flex-col gap-2 mt-2 ps-2">
-              <NavLink to="/home/invoice" className={linkClass} onClick={handleLinkClick}> 
+              <NavLink to="/admin/invoice" className={linkClass} onClick={handleLinkClick}> 
               <Receipt />
               <span>ادارة الفواتير</span>
               </NavLink>
-              <NavLink to="/home/manage_message" className={linkClass} onClick={handleLinkClick}> 
+              <NavLink to="/admin/manage_message" className={linkClass} onClick={handleLinkClick}> 
               <FileText />
               <span>ادارة الرسائل النصية</span>
               </NavLink>

@@ -83,6 +83,33 @@ export const getManagers = async ({page, limit, search, sortType, status}) => {
   return response.data;
 };
 
+export const getUsersCount = async ({page, limit, search, sortType, status}) => {
+  const response = await api.get("/v1/users", {
+    params: {
+      page,
+      limit,
+      role: "CLIENT",
+      search: search || undefined,
+      sort: sortType !== "automatic" ? sortType : undefined,
+      status: status !== "all" ? status : undefined,
+    },
+  });
+  return response.data;
+};
+
+export const statistics = async ({page, limit, search, sortType, status}) => {
+  const response = await api.get("/v1/users/statistics", {
+    params: {
+      page,
+      limit,
+      search: search || undefined,
+      sort: sortType !== "automatic" ? sortType : undefined,
+      status: status !== "all" ? status : undefined,
+    },
+  });
+  return response.data;
+};
+
 export const getClients = async ({ page, limit, search, sortType, status }) => {
   const response = await api.get("/v1/users", {
     params: {
@@ -286,5 +313,26 @@ export const bikers_points = async(page, limit, search, sortType, status) => {
   });
   return response.data;
 }
+
+export const get_services = async(page, limit, search, sortType, status) => {
+  const response = await api.get("/v1/service/all-service", {
+    params: {
+      page,
+      limit,
+      search: search || undefined,
+      sort: sortType !== "automatic" ? sortType : undefined,
+      status: status !== "all" ? status : undefined,
+    },
+  });
+  return response.data;
+}
+
+export const post_services = async (serviceData) => {
+  const response = await api.post(
+    "/v1/service/create-service",
+    serviceData
+  );
+  return response.data;
+};
 
 export default api;

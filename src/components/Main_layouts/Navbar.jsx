@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {Menu, LogOut, LayoutDashboard  } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link  } from "react-router-dom";
 
 function Navbar({ onMenuClick }) {
   const navigate = useNavigate();
@@ -16,10 +16,10 @@ function Navbar({ onMenuClick }) {
           <Menu size={22} />
         </button>
 
-        <h1 className="flex items-center gap-2 text-base sm:text-lg font-semibold text-gray-800 whitespace-nowrap truncate">
+        <Link to="/admin/dashboard" className="flex items-center gap-2 text-base sm:text-lg font-semibold text-gray-800 whitespace-nowrap truncate hover:text-blue-600 transition-colors">
           <LayoutDashboard className="w-5 h-5" />
-          لوحة التحكم
-        </h1>
+          <h1 className="whitespace-nowrap truncate">لوحة التحكم</h1>
+        </Link>
       </div>
 
       {/* Right group */}

@@ -13,7 +13,7 @@ function Otp() {
       const response = await verifyOtp(code);
       console.log(response);
       localStorage.setItem("auth_token", response.data.access_token);
-      navigate("/home");
+      navigate("/admin");
     } catch (error) {
       console.log("Full error:", error);
       console.log("Response:", error.response?.data);

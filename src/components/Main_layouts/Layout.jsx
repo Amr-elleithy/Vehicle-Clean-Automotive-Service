@@ -7,12 +7,12 @@ function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div dir="rtl">
+    <div dir="rtl" className="min-h-screen">
       <div className="flex flex-col min-h-screen">
-        <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
-        <div className="flex flex-1">
+        <Navbar onMenuClick={() => setIsSidebarOpen(true)}/>
+        <div className="flex flex-1 min-h-0">
           <Sidebar isOpen={isSidebarOpen} onOpen={() => setIsSidebarOpen(true)} onClose={() => setIsSidebarOpen(false)}/>
-          <main className="flex-1 p-4 sm:p-6 bg-gray-50 min-w-0">
+          <main className="flex-1 min-w-0 bg-gray-50 p-4 sm:p-6">
             <Outlet />
           </main>
         </div>

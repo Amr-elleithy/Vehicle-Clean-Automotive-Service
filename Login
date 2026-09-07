@@ -1,0 +1,3 @@
+username: admin@gmail.com
+password: Quicky123
+OTP password: 1234
