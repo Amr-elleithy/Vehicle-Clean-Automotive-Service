@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Managers_mail from "./User_tabs/Managers_mail";
 import Users_mail from "./User_tabs/Users_mail";
 import registerUser from "../../api_contents/api";

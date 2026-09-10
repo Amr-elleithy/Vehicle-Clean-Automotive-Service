@@ -15,7 +15,6 @@ export default function Services() {
     price: "",
   });
 
-   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -25,10 +24,8 @@ export default function Services() {
     }));
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setShowModal(false);
-
     setFormData({
       name_ar: "",
       name_en: "",
@@ -36,7 +33,6 @@ export default function Services() {
     });
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,10 +50,8 @@ export default function Services() {
 
     console.log("CREATE SERVICE RESPONSE:", response);
 
-    // Close modal
     handleCloseModal();
 
-    // Refresh services
     const servicesResponse = await get_services(
       1,
       10,

@@ -1,5 +1,5 @@
+import { useState, useEffect } from "react";
 import { Search, Pencil, Trash2 } from "lucide-react";
-import React, { useState, useEffect } from "react";
 import { getClients } from "../../../api_contents/api";
 
 export default function Users_mail() {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Search, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MessageSquare } from "lucide-react";
 import { sms } from "../../api_contents/api";
 
 const SENDER_IDS = [

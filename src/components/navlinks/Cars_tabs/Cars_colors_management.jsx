@@ -1,9 +1,7 @@
-import React from 'react'
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { Trash2 } from "lucide-react";
 import "./ColorPicker.css";
-import {color} from "../../../api_contents/api";
 
 export default function Cars_colors_management() {
   const [color, setColor] = useState("#b1adad");

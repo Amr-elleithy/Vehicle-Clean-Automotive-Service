@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, Pencil, Trash2 } from "lucide-react";
 import { getManagers } from "../../../api_contents/api";
 

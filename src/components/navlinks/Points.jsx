@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import Users_points from "./Points_tabs/Users_points";
 import Bikers_points from "./Points_tabs/Bikers_points";

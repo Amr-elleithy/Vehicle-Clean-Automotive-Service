@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Search, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FileText } from "lucide-react";
 import { getUserBills } from "../../api_contents/api";
 import { downloadInvoice } from "../../api_contents/api";
 

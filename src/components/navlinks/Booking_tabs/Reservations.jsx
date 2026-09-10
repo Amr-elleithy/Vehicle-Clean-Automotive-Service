@@ -1,4 +1,3 @@
-import React from "react";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { order } from "../../../api_contents/api";

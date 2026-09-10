@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { admin_points } from "../../../api_contents/api";
 
 export default function Points_management() {

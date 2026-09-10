@@ -1,20 +1,13 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import Gifts_send_list from "./Gifts_tabs/Gifts_send_list";
+import { useState, useEffect, useMemo } from "react";
 import ReactCountryFlag from "react-country-flag";
-import { service_gift } from "../../api_contents/api";
-import { baqu } from "../../api_contents/api";
-import { add_gift } from "../../api_contents/api";
+import { MessageSquare } from "lucide-react";
+import { service_gift, baqu, add_gift, display_gifts } from "../../api_contents/api";
 
 export default function Gift() {
-  const [activeTab, setActiveTab] = useState("Gifts_send_list");
+  const PAGE_SIZE = 10;
   const [showForm, setShowForm] = useState(false);
   const [services, setServices] = useState([]);
-  const [packages, setPackages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortType, setSortType] = useState("automatic");
-  const [status, setStatus] = useState("all");
+  const [formLoading, setFormLoading] = useState(false);
   const [formData, setFormData] = useState({
     phone: "",
     package_id: "",
@@ -22,78 +15,47 @@ export default function Gift() {
     description: "",
   });
 
+  const [packages, setPackages] = useState([]);
+  const [packagesLoading, setPackagesLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [sortType, setSortType] = useState("automatic");
+  const [status, setStatus] = useState("all");
+  const [selectedPackageFilter, setSelectedPackageFilter] = useState("all");
+  const [gifts, setGifts] = useState([]);
+  const [giftsLoading, setGiftsLoading] = useState(false);
+
+  const SINGLE_WASH_PACKAGE_NAME = "single wash";
+
+  const selectedFormPackage = packages.find(
+    (pkg) => pkg.id === formData.package_id,
+  );
+  const isSingleWashPackage =
+    selectedFormPackage?.name?.trim().toLowerCase() ===
+    SINGLE_WASH_PACKAGE_NAME;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
       const digits = value.replace(/\D/g, "");
-
-      setFormData((prev) => ({
-        ...prev,
-        phone: digits,
-      }));
+      setFormData((prev) => ({ ...prev, phone: digits }));
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  const SINGLE_WASH_PACKAGE_NAME = "single wash";
-
-  const selectedPackage = packages.find(
-    (pkg) => pkg.id === formData.package_id,
-  );
-  const isSingleWashPackage =
-    selectedPackage?.name?.trim().toLowerCase() === SINGLE_WASH_PACKAGE_NAME;
 
   const handlePackageChange = (e) => {
     const packageId = e.target.value;
-
     setFormData((prev) => ({
       ...prev,
       package_id: packageId,
       service_id: "",
     }));
   };
-
-  const fetchPackages = async () => {
-    try {
-      setLoading(true);
-      const res = await baqu({
-        page: 1,
-        limit: 10,
-        search: "",
-        sortType: "automatic",
-        status: "all",
-      });
-
-      setPackages(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPackages();
-  }, []);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const res = await service_gift();
-        setServices(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchServices();
-  }, []);
 
   const resetForm = () => {
     setFormData({
@@ -120,16 +82,15 @@ export default function Gift() {
     };
 
     try {
-      setLoading(true);
+      setFormLoading(true);
 
       console.log("Sending payload:", payload);
-
       const res = await add_gift(payload);
-
       console.log("✅ Gift added successfully");
       console.log("Response:", res);
 
       closeForm();
+      fetchGifts();
     } catch (err) {
       console.error("❌ Failed to add gift");
 
@@ -140,9 +101,93 @@ export default function Gift() {
         console.log(err.message);
       }
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
+
+  const fetchPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const res = await baqu({
+        page: 1,
+        limit: 100,
+        search: "",
+        sortType: "automatic",
+        status: "all",
+      });
+      setPackages(res.data?.packages ?? res.data ?? []);
+    } catch (err) {
+      console.error("ERROR fetching packages:", err);
+      setPackages([]);
+    } finally {
+      setPackagesLoading(false);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const res = await service_gift();
+      setServices(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchGifts = async () => {
+    try {
+      setGiftsLoading(true);
+
+      const res = await display_gifts(
+        currentPage,
+        PAGE_SIZE,
+        search,
+        sortType,
+        status,
+      );
+
+      setGifts(res.data.gifts);
+
+      if (res.meta?.total) {
+        setTotalPages(Math.max(1, Math.ceil(res.meta.total / PAGE_SIZE)));
+      } else {
+        setTotalPages(1);
+      }
+    } catch (err) {
+      console.error("ERROR:", err);
+      setGifts([]);
+    } finally {
+      setGiftsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPackages();
+    fetchServices();
+  }, []);
+
+  useEffect(() => {
+    fetchGifts();
+  }, [currentPage, search, sortType, status]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setCurrentPage(1);
+      setSearch(searchInput);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  const sortedGifts = useMemo(() => {
+    if (sortType === "automatic") return gifts;
+
+    const copy = [...gifts];
+    copy.sort((a, b) => {
+      const dateA = new Date(a.subscription?.created_at ?? 0).getTime();
+      const dateB = new Date(b.subscription?.created_at ?? 0).getTime();
+      return sortType === "asc" ? dateA - dateB : dateB - dateA;
+    });
+    return copy;
+  }, [gifts, sortType]);
 
   return (
     <div className="p-6">
@@ -157,14 +202,8 @@ export default function Gift() {
       </div>
 
       {showForm && (
-        <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-          onClick={closeForm}
-        >
-          <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={closeForm}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="flex justify-between items-center border-b p-6">
               <h2 className="text-2xl font-bold">إضافة هدية جديدة</h2>
@@ -190,14 +229,7 @@ export default function Gift() {
                     />
 
                     <div className="flex items-center gap-2 px-3 bg-gray-100 border-l">
-                      <ReactCountryFlag
-                        countryCode="SA"
-                        svg
-                        style={{
-                          width: "1.5em",
-                          height: "1.5em",
-                        }}
-                      />
+                      <ReactCountryFlag countryCode="SA"svg style={{ width: "1.5em", height: "1.5em" }}/>
                       <span className="font-medium">+966</span>
                     </div>
                   </div>
@@ -224,7 +256,6 @@ export default function Gift() {
                   </select>
                 </div>
 
-                {/* Service Select - appears only when the selected package is "single wash" */}
                 {isSingleWashPackage && (
                   <div className="col-span-2">
                     <label className="block mb-2 font-medium">
@@ -275,10 +306,10 @@ export default function Gift() {
 
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={formLoading}
                     className="px-6 py-2 rounded-lg bg-blue-600 text-white disabled:opacity-60"
                   >
-                    {loading ? "جاري الإضافة..." : "إضافة"}
+                    {formLoading ? "جاري الإضافة..." : "إضافة"}
                   </button>
                 </div>
               </form>
@@ -286,24 +317,117 @@ export default function Gift() {
           </div>
         </div>
       )}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Tabs */}
-        <div className="flex border-b">
-          <button
-            onClick={() => setActiveTab("Gifts_send_list")}
-            className={`flex-1 py-4 font-semibold transition ${
-              activeTab === "Gifts_send_list"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
-            }`}
+
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden p-6">
+        <div className="flex items-center gap-3">
+          <select
+            value={selectedPackageFilter}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedPackageFilter(value);
+              setCurrentPage(1);
+              setStatus(value);
+            }}
+            disabled={packagesLoading}
+            className="w-[30%] rounded-lg border border-gray-300 bg-white px-4 py-2 text-right shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            قائمة الهدايا المرسلة
-          </button>
+            <option value="all">الكل</option>
+            {packages.map((pkg) => (
+              <option key={pkg.id} value={pkg.id}>
+                {pkg.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Content */}
-        <div className="p-6">
-          {activeTab === "Gifts_send_list" && <Gifts_send_list />}
+        <div className="mt-6 rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-right">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-3">#</th>
+                  <th className="px-4 py-3">رقم جوال المرسال </th>
+                  <th className="px-4 py-3">رقم جوال المرسل اليه </th>
+                  <th className="px-4 py-3">نوع الهدية</th>
+                  <th className="px-4 py-3">نص الرسالة</th>
+                  <th className="px-4 py-3">تاريخ الارسال</th>
+                  <th className="px-4 py-3">الخدمات الاضافية</th>
+                </tr>
+              </thead>
+              <tbody>
+                {giftsLoading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-6">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : sortedGifts.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-6 text-gray-400">
+                      لا توجد بيانات
+                    </td>
+                  </tr>
+                ) : (
+                  sortedGifts.map((gift, index) => (
+                    <tr key={gift.id ?? index} className="border-t">
+                      <td className="px-4 py-3">
+                        {(currentPage - 1) * PAGE_SIZE + index + 1}
+                      </td>
+                      <td className="px-4 py-3">{gift.sender?.phone}</td>
+                      <td className="px-4 py-3">{gift.receiver?.phone}</td>
+                      <td className="px-4 py-3">{gift.subscription?.name}</td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => alert(gift.message)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <MessageSquare size={18} />
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        {gift.subscription?.created_at
+                          ? new Date(
+                              gift.subscription.created_at,
+                            ).toLocaleDateString()
+                          : "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {gift.subscription?.service?.length > 0
+                          ? gift.subscription.service
+                              .map((service) => service.name)
+                              .join("، ")
+                          : "لا توجد خدمات إضافية"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-center items-center gap-4 p-4 border-t">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              السابق
+            </button>
+
+            <span>
+              صفحة {currentPage} من {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              التالي
+            </button>
+          </div>
         </div>
       </div>
     </div>

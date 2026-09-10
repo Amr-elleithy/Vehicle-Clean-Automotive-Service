@@ -1,7 +1,7 @@
+import { useState, useEffect } from "react";
 import Cars_management from "./Cars_tabs/Cars_management";
 import Cars_colors_management from "./Cars_tabs/Cars_colors_management";
 import Brands_management from "./Cars_tabs/Brands_management";
-import React, { useState, useEffect } from "react";
 import { getBrands } from "../../api_contents/api";
 import { createBrands, createVehicleBrands } from "../../api_contents/api";
 
@@ -58,7 +58,6 @@ export default function Cars() {
     } catch (err) {
       console.log("❌ Failed to create brand!");
 
-      // Show the server's response if available
       if (err.response) {
         console.log("Status:", err.response.status);
         console.log("Error:", err.response.data);
@@ -198,14 +197,8 @@ export default function Cars() {
         )}
 
         {showCarForm && (
-          <div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-            onClick={() => setShowCarForm(false)}
-          >
-            <div
-              className="bg-white rounded-xl shadow-2xl w-full max-w-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCarForm(false)}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
               {/* Header */}
               <div className="flex justify-between items-center border-b p-6">
                 <h2 className="text-2xl font-bold">إضافة سيارة جديدة</h2>
